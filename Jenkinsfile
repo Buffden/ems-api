@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        steps('Validate Maven Build') {
+        stage('Validate Maven Build') {
             steps {
                 echo 'Validating Maven Build'
                 sh '''
