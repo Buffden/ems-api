@@ -16,6 +16,20 @@ pipeline {
             }
         }
 
+        steps('Validate Maven Build') {
+            steps {
+                echo 'Validating Maven Build'
+                sh '''
+                    if []; then
+                        echo "Maven build successfull, .jar file exists"
+                    else
+                        echo "Maven build validation failed: .jar file does not exist."
+                        exit 1
+                    fi
+                '''
+            }
+        }
+
         stage('Dockerize Application') {
             steps {
                 echo 'Building Docker Image...'
