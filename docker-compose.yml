@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${DB_CREDENTIALS_USR}
+      POSTGRES_PASSWORD: ${DB_CREDENTIALS_PSW}
+      POSTGRES_DB: employee_management_db
+    ports:
+      - "5433:5432" # Change host port to 5433
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+    container_name: springboot-app
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://localhost:5433/employee_management_db # Updated with new port
+      DB_CREDENTIALS_USR: ${DB_CREDENTIALS_USR}
+      DB_CREDENTIALS_PSW: ${DB_CREDENTIALS_PSW}
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
