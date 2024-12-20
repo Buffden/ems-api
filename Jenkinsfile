@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.8.5-openjdk-17' // Use a Docker image with Maven and OpenJDK
+        }
+    }
 
     stages {
         stage('Clone Repository') {
@@ -18,12 +22,12 @@ pipeline {
 
         stage('Validate Maven Build') {
             steps {
-                echo 'Validating Maven Build'
+                echo 'Validating Maven Build...'
                 sh '''
-                    if []; then
-                        echo "Maven build successfull, .jar file exists"
+                    if [ -f target/employee-management-system.jar ]; then
+                        echo "Build validation successful: .jar file exists."
                     else
-                        echo "Maven build validation failed: .jar file does not exist."
+                        echo "Build validation failed: .jar file does not exist."
                         exit 1
                     fi
                 '''
@@ -53,7 +57,7 @@ pipeline {
             echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'Pipeline failed. Please check the logs.'
         }
     }
 }
