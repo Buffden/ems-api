@@ -5,7 +5,7 @@ pipeline {
         }
     }
     environment {
-            DB_CREDENTIALS = credentials('db-credentials')
+        DB_CREDENTIALS = credentials('db-credentials') // Jenkins credentials ID
     }
 
     stages {
@@ -16,14 +16,14 @@ pipeline {
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build Application') {
             steps {
-                echo 'Building the project...'
+                echo 'Building the application...'
                 sh 'mvn clean package'
             }
         }
 
-        stage('Validate Maven Build') {
+        stage('Validate Maven Build') { // Validation stage added here
             steps {
                 echo 'Validating Maven Build...'
                 sh '''
@@ -37,20 +37,31 @@ pipeline {
             }
         }
 
-        stage('Dockerize Application') {
+        stage('Run Application with Docker') {
             steps {
-                echo 'Building Docker Image...'
+                echo 'Starting PostgreSQL and Spring Boot...'
                 sh '''
-                    docker build -t spring-boot-app .
-                    docker tag spring-boot-app buffden/spring-boot-app:latest
+                    # Export environment variables
+                    export DB_CREDENTIALS_USR=${DB_CREDENTIALS_USR}
+                    export DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
+
+                    # Start services
+                    docker-compose up -d --build
                 '''
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Tests') {
             steps {
-                echo 'Running Docker Container...'
-                sh 'docker run -d -p 8081:8080 --name backend-container spring-boot-app'
+                echo 'Running tests...'
+                sh 'mvn test'
+            }
+        }
+
+        stage('Stop Services') {
+            steps {
+                echo 'Stopping services...'
+                sh 'docker-compose down'
             }
         }
     }
