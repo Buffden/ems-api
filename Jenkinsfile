@@ -4,6 +4,9 @@ pipeline {
             image 'maven:3.8.5-openjdk-17' // Use a Docker image with Maven and OpenJDK
         }
     }
+    environment {
+            DB_CREDENTIALS = credentials('db-credentials')
+    }
 
     stages {
         stage('Clone Repository') {
