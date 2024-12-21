@@ -27,7 +27,7 @@ pipeline {
             steps {
                 echo 'Validating Maven Build...'
                 sh '''
-                    if [ -f target/employee-management-system.jar ]; then
+                    if [ -f target/employee-management-system-0.0.1-SNAPSHOT.jar ]; then
                         echo "Build validation successful: .jar file exists."
                     else
                         echo "Build validation failed: .jar file does not exist."
