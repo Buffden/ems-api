@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_CREDENTIALS_PSW}
       POSTGRES_DB: employee_management_db
     ports:
-      - "5433:5432" # Change host port to 5433
+      - "5433:5432" # Host port 5433, container port 5432
     networks:
       - app-network
 
@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DB_URL: jdbc:postgresql://localhost:5433/employee_management_db # Updated with new port
+      DB_URL: jdbc:postgresql://postgres:5432/employee_management_db # Point to the 'postgres' container
       DB_CREDENTIALS_USR: ${DB_CREDENTIALS_USR}
       DB_CREDENTIALS_PSW: ${DB_CREDENTIALS_PSW}
     ports:

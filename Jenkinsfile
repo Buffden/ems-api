@@ -51,6 +51,13 @@ pipeline {
             }
         }
 
+        stage('Start Services') {
+            steps {
+                echo 'Starting PostgreSQL and Spring Boot services...'
+                sh 'docker-compose up -d'
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
