@@ -16,6 +16,7 @@ services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: springboot-app
     depends_on:
       - postgres
