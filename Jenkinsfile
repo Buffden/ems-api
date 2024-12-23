@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         DB_CREDENTIALS = credentials('db-credentials') // Jenkins credentials ID
-        PATH = "/usr/local/bin:/usr/bin:/bin:$PATH"
+        PATH = "/Applications/Docker.app/Contents/Resources/cli-plugins:/usr/local/bin:/usr/bin:/bin:$PATH"
     }
 
     stages {
