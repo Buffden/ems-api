@@ -26,7 +26,7 @@ pipeline {
 
         stage('Validate Docker Compose') {
             steps {
-                sh 'docker compose --version'
+                sh 'docker-compose --version'
             }
         }
         stage('Validate Maven Build') { // Validation stage added here
@@ -52,7 +52,7 @@ pipeline {
                     export DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
 
                     # Start services
-                    docker compose up -d --build
+                    docker-compose up -d --build
                 '''
             }
         }
@@ -60,7 +60,7 @@ pipeline {
         stage('Start Services') {
             steps {
                 echo 'Starting PostgreSQL and Spring Boot services...'
-                sh 'docker compose up -d'
+                sh 'docker-compose up -d'
             }
         }
 
@@ -74,7 +74,7 @@ pipeline {
         stage('Stop Services') {
             steps {
                 echo 'Stopping services...'
-                sh 'docker compose down'
+                sh 'docker-compose down'
             }
         }
     }
