@@ -2,13 +2,21 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven-3.8.8' // Match the name in the Global Tool Configuration
+        maven 'Maven-3.8.8'
     }
 
     environment {
-        DB_CREDENTIALS = credentials('db-credentials') // Jenkins credentials ID
+        DB_CREDENTIALS = credentials('db-credentials')
     }
 
+    stage('Debug Docker') {
+        steps {
+            sh '''
+                docker --version
+                docker compose version
+            '''
+        }
+    }
     stages {
         stage('Clone Repository') {
             steps {
@@ -26,7 +34,7 @@ pipeline {
 
         stage('Validate Docker Compose') {
             steps {
-                sh 'docker compose version' // Use `docker compose` instead of `docker-compose`
+                sh 'docker compose version' // Use `docker compose`
             }
         }
 
@@ -34,11 +42,8 @@ pipeline {
             steps {
                 echo 'Starting PostgreSQL and Spring Boot...'
                 sh '''
-                    # Export environment variables
                     export DB_CREDENTIALS_USR=${DB_CREDENTIALS_USR}
                     export DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
-
-                    # Start services
                     docker compose up -d --build
                 '''
             }
