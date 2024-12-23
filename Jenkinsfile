@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DB_CREDENTIALS = credentials('db-credentials') // Jenkins credentials ID
-        PATH = "/Applications/Docker.app/Contents/Resources/cli-plugins:/usr/local/bin:/usr/bin:/bin:$PATH"
+        PATH = "/usr/local/bin:/usr/bin:/bin:$PATH"    // Ensure Docker CLI is in PATH
     }
 
     stages {
@@ -31,9 +31,8 @@ pipeline {
                 echo 'Debugging Docker Compose...'
                 sh '''
                     echo "Validating Docker and Docker Compose installation..."
-                    echo "Current PATH: $PATH"
                     docker --version
-                    /Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose version
+                    docker compose version
                     which docker
                 '''
             }
@@ -48,7 +47,7 @@ pipeline {
                     export DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
 
                     # Start services using docker compose
-                    /Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose up -d --build
+                    docker compose up -d --build
                 '''
             }
         }
@@ -63,7 +62,7 @@ pipeline {
         stage('Stop Services') {
             steps {
                 echo 'Stopping services...'
-                sh '/Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose down'
+                sh 'docker compose down'
             }
         }
     }
