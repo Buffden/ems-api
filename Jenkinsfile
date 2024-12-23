@@ -1,9 +1,6 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.5-openjdk-17' // Use a Docker image with Maven and OpenJDK
-        }
-    }
+    agent any
+
     environment {
         DB_CREDENTIALS = credentials('db-credentials') // Jenkins credentials ID
     }
