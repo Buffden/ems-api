@@ -31,11 +31,10 @@ pipeline {
                 echo 'Debugging Docker Compose...'
                 sh '''
                     echo "Validating Docker and Docker Compose installation..."
-                    echo $PATH
+                    echo "Current PATH: $PATH"
                     docker --version
-                    docker compose version
+                    /Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose version
                     which docker
-                    echo "PATH=$PATH"
                 '''
             }
         }
@@ -49,7 +48,7 @@ pipeline {
                     export DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
 
                     # Start services using docker compose
-                    docker compose up -d --build
+                    /Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose up -d --build
                 '''
             }
         }
@@ -64,7 +63,7 @@ pipeline {
         stage('Stop Services') {
             steps {
                 echo 'Stopping services...'
-                sh 'docker compose down'
+                sh '/Applications/Docker.app/Contents/Resources/cli-plugins/docker-compose down'
             }
         }
     }
