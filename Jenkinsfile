@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven-3.8.8' // Match the name in the Global Tool Configuration
+        maven 'Maven-3.8.8'        // Refers to Maven installation in Global Tool Configuration
+        dockerTool 'Docker'        // Refers to Docker installation in Global Tool Configuration
     }
 
     environment {
