@@ -30,6 +30,7 @@ pipeline {
                 echo 'Debugging Docker Compose...'
                 sh '''
                     echo "Validating Docker and Docker Compose installation..."
+                    echo $PATH
                     docker --version
                     docker compose version
                     which docker
