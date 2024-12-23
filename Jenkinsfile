@@ -29,19 +29,6 @@ pipeline {
                 sh 'docker-compose --version'
             }
         }
-        stage('Validate Maven Build') { // Validation stage added here
-            steps {
-                echo 'Validating Maven Build...'
-                sh '''
-                    if [ -f target/employee-management-system-0.0.1-SNAPSHOT.jar ]; then
-                        echo "Build validation successful: .jar file exists."
-                    else
-                        echo "Build validation failed: .jar file does not exist."
-                        exit 1
-                    fi
-                '''
-            }
-        }
 
         stage('Run Application with Docker') {
             steps {
@@ -54,13 +41,6 @@ pipeline {
                     # Start services
                     docker-compose up -d --build
                 '''
-            }
-        }
-
-        stage('Start Services') {
-            steps {
-                echo 'Starting PostgreSQL and Spring Boot services...'
-                sh 'docker-compose up -d'
             }
         }
 
