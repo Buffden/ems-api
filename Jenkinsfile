@@ -9,15 +9,15 @@ pipeline {
         DB_CREDENTIALS = credentials('db-credentials')
     }
 
-    stage('Debug Docker') {
-        steps {
-            sh '''
-                docker --version
-                docker compose version
-            '''
-        }
-    }
     stages {
+        stage('Debug Docker') {
+            steps {
+                sh '''
+                    docker --version
+                    docker compose version
+                '''
+            }
+        }
         stage('Clone Repository') {
             steps {
                 echo 'Cloning Repository...'
