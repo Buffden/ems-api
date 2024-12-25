@@ -33,7 +33,11 @@ pipeline {
                     echo "Validating Docker and Docker Compose installation..."
                     docker --version
                     docker compose version
-                    which docker
+                    echo "Checking current user and groups..."
+                    whoami
+                    groups
+                    echo "Checking Docker socket permissions..."
+                    ls -l /var/run/docker.sock
                 '''
             }
         }
