@@ -38,6 +38,8 @@ pipeline {
                     groups
                     echo "Checking Docker socket permissions..."
                     ls -l /var/run/docker.sock
+                    echo "Testing Docker daemon access..."
+                    docker ps || echo "Docker daemon is not accessible. Check permissions or socket configuration."
                 '''
             }
         }
