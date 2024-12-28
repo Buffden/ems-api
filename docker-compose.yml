@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Persist PostgreSQL data
+      - postgres_data:/var/lib/postgresql/data
 
   app:
     build:
@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/employee_management_db # Point to the 'postgres' container
+      DB_URL: jdbc:postgresql://postgres:5432/employee_management_db
       DB_CREDENTIALS_USR: ${DB_CREDENTIALS_USR}
       DB_CREDENTIALS_PSW: ${DB_CREDENTIALS_PSW}
     ports:
@@ -31,9 +31,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Mount Docker socket for Jenkins access
       - ./app_logs:/app/logs # Add volume for app logs if required (optional)
+    entrypoint: [ "sh", "-c", "sleep 10 && java -jar /app.jar" ]
 
 networks:
   app-network:
+    name: app-network
     driver: bridge
 
 volumes:
