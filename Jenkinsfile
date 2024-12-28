@@ -31,13 +31,15 @@ pipeline {
                 echo 'Debugging Docker Compose...'
                 sh '''
                     echo "Validating Docker and Docker Compose installation..."
-                    docker --version
-                    docker compose version
+                    docker --version || echo "Docker is not installed or not accessible"
+                    docker-compose --version || echo "Docker Compose is not installed or not accessible"
                     echo "Checking current user and groups..."
-                    whoami
-                    groups
+                    whoami || echo "Unable to retrieve current user"
+                    groups || echo "Unable to retrieve group membership"
                     echo "Checking Docker socket permissions..."
-                    ls -l /var/run/docker.sock
+                    ls -l /var/run/docker.sock || echo "Docker socket not found or inaccessible"
+                    echo "Testing Docker command access..."
+                    docker ps || echo "Unable to run Docker commands. Check permissions."
                 '''
             }
         }
