@@ -37,7 +37,6 @@ pipeline {
 
                     echo "Checking Docker Compose versions..."
                     docker-compose --version || echo "docker-compose (V1 syntax) is not installed or not accessible"
-                    docker compose version || echo "docker compose (V2 syntax) is not installed or not accessible"
 
                     echo "### Validating Environment ###"
 
