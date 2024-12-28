@@ -65,12 +65,16 @@ pipeline {
             steps {
                 echo 'Starting PostgreSQL and Spring Boot...'
                 sh '''
-                    # Export environment variables
-                    export DB_CREDENTIALS_USR=${DB_CREDENTIALS_USR}
-                    export DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
+                    # Check if the postgres container already exists
+                    if docker ps -a --filter name=postgres | grep -w postgres; then
+                        echo "Using existing PostgreSQL container..."
+                    else
+                        echo "Starting a new PostgreSQL container..."
+                        docker-compose up -d --build postgres
+                    fi
 
-                    # Start services using docker-compose
-                    docker-compose up -d --build
+                    # Start the other services
+                    docker-compose up -d --build jenkins app
                 '''
             }
         }
