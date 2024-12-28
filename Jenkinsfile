@@ -30,19 +30,41 @@ pipeline {
             steps {
                 echo 'Debugging Docker Compose...'
                 sh '''
-                    echo "Validating Docker and Docker Compose installation..."
+                    echo "### Validating Docker and Docker Compose Installation ###"
+
+                    echo "Checking Docker version..."
                     docker --version || echo "Docker is not installed or not accessible"
-                    docker-compose --version || echo "Docker Compose is not installed or not accessible"
-                    echo "Checking current user and groups..."
+
+                    echo "Checking Docker Compose versions..."
+                    docker-compose --version || echo "docker-compose (V1 syntax) is not installed or not accessible"
+                    docker compose version || echo "docker compose (V2 syntax) is not installed or not accessible"
+
+                    echo "### Validating Environment ###"
+
+                    echo "Current user and groups..."
                     whoami || echo "Unable to retrieve current user"
                     groups || echo "Unable to retrieve group membership"
-                    echo "Checking Docker socket permissions..."
-                    ls -l /var/run/docker.sock || echo "Docker socket not found or inaccessible"
-                    echo "Testing Docker command access..."
-                    docker ps || echo "Unable to run Docker commands. Check permissions."
+
+                    echo "Docker socket permissions..."
+                    ls -l /var/run/docker.sock || echo "Docker socket is not accessible"
+
+                    echo "PATH Environment Variable..."
+                    echo $PATH
+
+                    echo "### Testing Docker Commands ###"
+
+                    echo "Testing Docker access with 'docker ps'..."
+                    docker ps || echo "Unable to execute Docker commands. Check Docker installation or permissions."
+
+                    echo "Testing Docker Compose (V2) with 'docker compose ls'..."
+                    docker compose ls || echo "docker compose (V2 syntax) failed. Check installation."
+
+                    echo "Testing Docker Compose (V1) with 'docker-compose ls'..."
+                    docker-compose ls || echo "docker-compose (V1 syntax) failed. Check installation."
                 '''
             }
         }
+
 
         stage('Run Application with Docker Compose') {
             steps {
