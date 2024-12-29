@@ -12,6 +12,16 @@ pipeline {
     }
 
     stages {
+        stage('Cleanup') {
+            steps {
+                echo 'Cleaning up any existing containers and volumes for app and postgres...'
+                sh '''
+                    # Stop and remove any conflicting containers
+                    docker-compose -f docker-compose.yml down --remove-orphans || echo "No existing containers to stop."
+                '''
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 echo 'Cloning Repository...'
@@ -56,7 +66,7 @@ pipeline {
                     docker ps || echo "Unable to execute Docker commands. Check Docker installation or permissions."
 
                     echo "Testing Docker Compose with 'docker-compose ls'..."
-                    docker-compose ls || echo "docker-compose failed. Check installation."
+                    docker-compose -f docker-compose.yml ls || echo "docker-compose failed. Check installation."
                 '''
             }
         }
@@ -65,16 +75,7 @@ pipeline {
             steps {
                 echo 'Starting PostgreSQL and Spring Boot...'
                 sh '''
-                    # Check if the postgres container already exists
-                    if docker ps -a --filter name=postgres | grep -w postgres; then
-                        echo "Using existing PostgreSQL container..."
-                    else
-                        echo "Starting a new PostgreSQL container..."
-                        docker-compose up -d --build postgres
-                    fi
-
-                    # Start the other services
-                    docker-compose up -d --build jenkins app
+                    docker-compose -f docker-compose.yml up -d --build --no-recreate postgres app
                 '''
             }
         }
@@ -88,8 +89,10 @@ pipeline {
 
         stage('Stop Services') {
             steps {
-                echo 'Stopping services...'
-                sh 'docker-compose down'
+                echo 'Stopping application services...'
+                sh '''
+                    docker-compose -f docker-compose.yml down --remove-orphans
+                '''
             }
         }
     }
