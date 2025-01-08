@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/employees")
@@ -29,7 +30,7 @@ public class EmployeeController {
     // Add a new employee
     @PostMapping
     public String addEmployee(@RequestBody Employee employee) {
-        if (employee.getDepartment() == null || employee.getDepartment().getId() == 0) {
+        if (employee.getDepartment() == null || employee.getDepartment().getId() == null) {
             throw new RuntimeException("Department is required for the employee!");
         }
 
@@ -39,7 +40,7 @@ public class EmployeeController {
             throw new RuntimeException("Invalid Department ID!");
         }
 
-        // Set the department
+        // Set the department and save
         employee.setDepartment(department.get());
         employeeRepository.save(employee);
         return "Employee added successfully!";
@@ -47,13 +48,13 @@ public class EmployeeController {
 
     // Get employee by ID
     @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable int id) {
+    public Employee getEmployeeById(@PathVariable UUID id) {
         return employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found with ID: " + id));
     }
 
     // Update an employee
     @PutMapping("/{id}")
-    public String updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
+    public String updateEmployee(@PathVariable UUID id, @RequestBody Employee updatedEmployee) {
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
         if (employeeOptional.isEmpty()) {
             throw new RuntimeException("Employee not found with ID: " + id);
@@ -61,11 +62,15 @@ public class EmployeeController {
 
         Employee existingEmployee = employeeOptional.get();
         existingEmployee.setName(updatedEmployee.getName());
+        existingEmployee.setAddress(updatedEmployee.getAddress());
+        existingEmployee.setEmail(updatedEmployee.getEmail());
+        existingEmployee.setPhone(updatedEmployee.getPhone());
         existingEmployee.setDesignation(updatedEmployee.getDesignation());
         existingEmployee.setSalary(updatedEmployee.getSalary());
+        existingEmployee.setJoiningDate(updatedEmployee.getJoiningDate());
 
         // Update department if provided
-        if (updatedEmployee.getDepartment() != null && updatedEmployee.getDepartment().getId() != 0) {
+        if (updatedEmployee.getDepartment() != null && updatedEmployee.getDepartment().getId() != null) {
             Optional<Department> department = departmentRepository.findById(updatedEmployee.getDepartment().getId());
             if (department.isEmpty()) {
                 throw new RuntimeException("Invalid Department ID!");
@@ -79,7 +84,7 @@ public class EmployeeController {
 
     // Delete an employee
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable int id) {
+    public String deleteEmployee(@PathVariable UUID id) {
         if (!employeeRepository.existsById(id)) {
             throw new RuntimeException("Employee not found with ID: " + id);
         }
