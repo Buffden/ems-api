@@ -32,6 +32,16 @@ services:
       - ./app_logs:/app/logs # Persist application logs
     entrypoint: [ "sh", "-c", "sleep 10 && java -jar /app.jar" ]
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_CREDENTIALS_USR}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_CREDENTIALS_PSW}
+    ports:
+      - "5050:80"
+    networks:
+      - app-network
 networks:
   app-network:
     name: app-network
