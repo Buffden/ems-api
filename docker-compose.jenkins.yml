@@ -14,7 +14,7 @@ services:
       - DB_CREDENTIALS_USR=${DB_CREDENTIALS_USR}
       - DB_CREDENTIALS_PSW=${DB_CREDENTIALS_PSW}
     ports:
-      - "8081:8080" # Expose Jenkins on localhost:8081
+      - "8085:8080" # Expose Jenkins on localhost:8085
     networks:
       - app-network
 
