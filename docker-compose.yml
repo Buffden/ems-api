@@ -1,52 +1,17 @@
 services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_USER: ${DB_CREDENTIALS_USR}
-      POSTGRES_PASSWORD: ${DB_CREDENTIALS_PSW}
-      POSTGRES_DB: employee_management_db
-    ports:
-      - "5433:5432" # Host port 5433, container port 5432
-    networks:
-      - app-network
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
-
   app:
     build:
       context: .
-      dockerfile: Dockerfile.app # Reference the Dockerfile.app for springboot-application
-    depends_on:
-      - postgres
+      dockerfile: Dockerfile.app
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/employee_management_db
+      DB_URL: jdbc:postgresql://employee-management-db.clcqqu684nm0.us-east-1.rds.amazonaws.com:5432/ems_db
       DB_CREDENTIALS_USR: ${DB_CREDENTIALS_USR}
       DB_CREDENTIALS_PSW: ${DB_CREDENTIALS_PSW}
     ports:
       - "8080:8080"
     networks:
       - app-network
-    volumes:
-      - ./app_logs:/app/logs # Persist application logs
-    entrypoint: [ "sh", "-c", "sleep 10 && java -jar /app.jar" ]
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_CREDENTIALS_USR}
-      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_CREDENTIALS_PSW}
-    ports:
-      - "5050:80"
-    networks:
-      - app-network
 networks:
   app-network:
-    name: app-network
-    driver: bridge
     external: true
-
-volumes:
-  postgres_data: {}
