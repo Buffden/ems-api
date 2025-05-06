@@ -1,8 +1,15 @@
 package com.ems.employee_management_system.models;
 
-import java.util.UUID;
-import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Employee {
@@ -11,6 +18,37 @@ public class Employee {
     private UUID id;
     private String name;
     private String address;
+    private String email;
+    private String phone;
+    private String designation;
+    private double salary;
+    private LocalDate joiningDate;
+
+    @Column(nullable = true)
+    private String employmentType;
+
+    @Column(nullable = true)
+    private String workLocation;
+
+    @Column(nullable = true)
+    private Integer experienceYears;
+
+    @Column(nullable = true)
+    private Double performanceRating;
+
+    @Column(nullable = true)
+    private LocalDate lastAppraisalDate;
+
+    @Column(nullable = true)
+    private Boolean isActive = true;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Employee manager;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     public UUID getId() {
         return id;
@@ -92,19 +130,53 @@ public class Employee {
         this.department = department;
     }
 
-    private String email;
-    private String phone;
-    private String designation;
-    private double salary;
-    private LocalDate joiningDate;
+    public String getEmploymentType() {
+        return employmentType;
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "manager_id")
-    private Employee manager;
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
+    public String getWorkLocation() {
+        return workLocation;
+    }
+
+    public void setWorkLocation(String workLocation) {
+        this.workLocation = workLocation;
+    }
+
+    public Integer getExperienceYears() {
+        return experienceYears;
+    }
+
+    public void setExperienceYears(Integer experienceYears) {
+        this.experienceYears = experienceYears;
+    }
+
+    public Double getPerformanceRating() {
+        return performanceRating;
+    }
+
+    public void setPerformanceRating(Double performanceRating) {
+        this.performanceRating = performanceRating;
+    }
+
+    public LocalDate getLastAppraisalDate() {
+        return lastAppraisalDate;
+    }
+
+    public void setLastAppraisalDate(LocalDate lastAppraisalDate) {
+        this.lastAppraisalDate = lastAppraisalDate;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 
     public Employee() {}
 
