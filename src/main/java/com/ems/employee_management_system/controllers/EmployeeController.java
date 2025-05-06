@@ -1,15 +1,23 @@
 package com.ems.employee_management_system.controllers;
 
-import com.ems.employee_management_system.models.Employee;
-import com.ems.employee_management_system.models.Department;
-import com.ems.employee_management_system.repositories.EmployeeRepository;
-import com.ems.employee_management_system.repositories.DepartmentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ems.employee_management_system.models.Department;
+import com.ems.employee_management_system.models.Employee;
+import com.ems.employee_management_system.repositories.DepartmentRepository;
+import com.ems.employee_management_system.repositories.EmployeeRepository;
 
 @RestController
 @RequestMapping("/employees")
@@ -61,6 +69,8 @@ public class EmployeeController {
         }
 
         Employee existingEmployee = employeeOptional.get();
+        
+        // Update basic information
         existingEmployee.setName(updatedEmployee.getName());
         existingEmployee.setAddress(updatedEmployee.getAddress());
         existingEmployee.setEmail(updatedEmployee.getEmail());
@@ -69,6 +79,14 @@ public class EmployeeController {
         existingEmployee.setSalary(updatedEmployee.getSalary());
         existingEmployee.setJoiningDate(updatedEmployee.getJoiningDate());
 
+        // Update new fields
+        existingEmployee.setEmploymentType(updatedEmployee.getEmploymentType());
+        existingEmployee.setWorkLocation(updatedEmployee.getWorkLocation());
+        existingEmployee.setExperienceYears(updatedEmployee.getExperienceYears());
+        existingEmployee.setPerformanceRating(updatedEmployee.getPerformanceRating());
+        existingEmployee.setLastAppraisalDate(updatedEmployee.getLastAppraisalDate());
+        existingEmployee.setIsActive(updatedEmployee.getIsActive());
+
         // Update department if provided
         if (updatedEmployee.getDepartment() != null && updatedEmployee.getDepartment().getId() != null) {
             Optional<Department> department = departmentRepository.findById(updatedEmployee.getDepartment().getId());
@@ -76,6 +94,15 @@ public class EmployeeController {
                 throw new RuntimeException("Invalid Department ID!");
             }
             existingEmployee.setDepartment(department.get());
+        }
+
+        // Update manager if provided
+        if (updatedEmployee.getManager() != null && updatedEmployee.getManager().getId() != null) {
+            Optional<Employee> manager = employeeRepository.findById(updatedEmployee.getManager().getId());
+            if (manager.isEmpty()) {
+                throw new RuntimeException("Invalid Manager ID!");
+            }
+            existingEmployee.setManager(manager.get());
         }
 
         employeeRepository.save(existingEmployee);
