@@ -16,39 +16,46 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String name;
-    private String address;
+
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
     private String phone;
+    private String address;
+
+    @Column(nullable = false)
     private String designation;
-    private double salary;
+
+    @Column(nullable = false)
+    private Double salary = 0.0;
+
+    @Column(nullable = false)
     private LocalDate joiningDate;
 
-    @Column(nullable = true)
-    private String employmentType;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Location location;
 
-    @Column(nullable = true)
-    private String workLocation;
-
-    @Column(nullable = true)
-    private Integer experienceYears;
-
-    @Column(nullable = true)
     private Double performanceRating;
 
-    @Column(nullable = true)
-    private LocalDate lastAppraisalDate;
-
-    @Column(nullable = true)
-    private Boolean isActive = true;
-
     @ManyToOne
-    @JoinColumn(name = "manager_id")
     private Employee manager;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(nullable = false)
     private Department department;
+
+    @Column(nullable = false)
+    private String workLocation;
+
+    @Column
+    private Integer experienceYears;
 
     public UUID getId() {
         return id;
@@ -58,20 +65,20 @@ public class Employee {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getAddress() {
-        return address;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -88,6 +95,14 @@ public class Employee {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getDesignation() {
@@ -130,14 +145,6 @@ public class Employee {
         this.department = department;
     }
 
-    public String getEmploymentType() {
-        return employmentType;
-    }
-
-    public void setEmploymentType(String employmentType) {
-        this.employmentType = employmentType;
-    }
-
     public String getWorkLocation() {
         return workLocation;
     }
@@ -162,28 +169,20 @@ public class Employee {
         this.performanceRating = performanceRating;
     }
 
-    public LocalDate getLastAppraisalDate() {
-        return lastAppraisalDate;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLastAppraisalDate(LocalDate lastAppraisalDate) {
-        this.lastAppraisalDate = lastAppraisalDate;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public Employee() {}
 
-    public Employee(String name, String address, String email, String phone, String designation, double salary,
+    public Employee(String firstName, String lastName, String email, String phone, String designation, double salary,
                     LocalDate joiningDate, Employee manager, Department department) {
-        this.name = name;
-        this.address = address;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.designation = designation;
