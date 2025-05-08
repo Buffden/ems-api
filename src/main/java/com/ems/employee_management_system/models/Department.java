@@ -1,6 +1,6 @@
 package com.ems.employee_management_system.models;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +11,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -20,6 +19,27 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    private String description;
+
+    @ManyToOne
+    private Location location;
+
+    @Column(nullable = false)
+    private LocalDate createdAt;
+
+    private Double budget = 0.0;
+    private Double budgetUtilization; // 0-1.0
+    private Double performanceMetric; // 0-100
+
+    @ManyToOne
+    private Employee departmentHead;
+
+    // Denormalized field for display purposes. Must be kept in sync with location.name
+    private String locationName;
 
     public UUID getId() {
         return id;
@@ -45,11 +65,11 @@ public class Department {
         this.description = description;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -69,11 +89,19 @@ public class Department {
         this.employees = employees;
     }
 
-    public String getLocation() {
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -102,33 +130,14 @@ public class Department {
     }
 
     public Employee getHead() {
-        return head;
+        return departmentHead;
     }
 
     public void setHead(Employee head) {
-        this.head = head;
+        this.departmentHead = head;
     }
 
-    private String name;
-    private String description;
-    private LocalDateTime createdAt = LocalDateTime.now();
     private Integer totalEmployees;
-
-    @Column(nullable = true)
-    private String location;
-
-    @Column(nullable = true)
-    private Double budget;
-
-    @Column(nullable = true)
-    private Double budgetUtilization;
-
-    @Column(nullable = true)
-    private Double performanceMetric;
-
-    @ManyToOne
-    @JoinColumn(name = "head_id")
-    private Employee head;
 
     @OneToMany(mappedBy = "department")
     @JsonIgnore

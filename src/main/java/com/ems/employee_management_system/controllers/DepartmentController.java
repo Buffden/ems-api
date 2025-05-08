@@ -1,10 +1,9 @@
 package com.ems.employee_management_system.controllers;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,76 +13,60 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ems.employee_management_system.dtos.DepartmentDTO;
+import com.ems.employee_management_system.mappers.DepartmentMapper;
 import com.ems.employee_management_system.models.Department;
 import com.ems.employee_management_system.models.Employee;
-import com.ems.employee_management_system.repositories.DepartmentRepository;
-import com.ems.employee_management_system.repositories.EmployeeRepository;
+import com.ems.employee_management_system.models.Location;
+import com.ems.employee_management_system.services.DepartmentService;
+import com.ems.employee_management_system.services.EmployeeService;
+import com.ems.employee_management_system.services.LocationService;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/api/departments")
 public class DepartmentController {
+    private final DepartmentService departmentService;
+    private final LocationService locationService;
+    private final EmployeeService employeeService;
 
-    @Autowired
-    private DepartmentRepository departmentRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @GetMapping
-    public List<Department> getAllDepartments() {
-        return departmentRepository.findAll();
+    public DepartmentController(DepartmentService departmentService, LocationService locationService, EmployeeService employeeService) {
+        this.departmentService = departmentService;
+        this.locationService = locationService;
+        this.employeeService = employeeService;
     }
 
-    @PostMapping
-    public String addDepartment(@RequestBody Department department) {
-        departmentRepository.save(department);
-        return "Department added successfully!";
+    @GetMapping
+    public List<DepartmentDTO> getAll() {
+        return departmentService.getAll().stream()
+                .map(DepartmentMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Department getDepartmentById(@PathVariable UUID id) {
-        return departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+    public DepartmentDTO getById(@PathVariable UUID id) {
+        Department department = departmentService.getById(id);
+        return department != null ? DepartmentMapper.toDTO(department) : null;
+    }
+
+    @PostMapping
+    public DepartmentDTO create(@RequestBody DepartmentDTO dto) {
+        Location location = locationService.getById(dto.getLocationId());
+        Employee head = dto.getDepartmentHeadId() != null ? employeeService.getById(dto.getDepartmentHeadId()) : null;
+        Department department = DepartmentMapper.toEntity(dto, location, head);
+        return DepartmentMapper.toDTO(departmentService.save(department));
     }
 
     @PutMapping("/{id}")
-    public String updateDepartment(@PathVariable UUID id, @RequestBody Department updatedDepartment) {
-        Optional<Department> departmentOptional = departmentRepository.findById(id);
-        if (departmentOptional.isEmpty()) {
-            throw new RuntimeException("Department not found with ID: " + id);
-        }
-
-        Department existingDepartment = departmentOptional.get();
-        
-        // Update basic information
-        existingDepartment.setName(updatedDepartment.getName());
-        existingDepartment.setDescription(updatedDepartment.getDescription());
-        existingDepartment.setTotalEmployees(updatedDepartment.getTotalEmployees());
-
-        // Update new fields
-        existingDepartment.setLocation(updatedDepartment.getLocation());
-        existingDepartment.setBudget(updatedDepartment.getBudget());
-        existingDepartment.setBudgetUtilization(updatedDepartment.getBudgetUtilization());
-        existingDepartment.setPerformanceMetric(updatedDepartment.getPerformanceMetric());
-
-        // Update department head if provided
-        if (updatedDepartment.getHead() != null && updatedDepartment.getHead().getId() != null) {
-            Optional<Employee> head = employeeRepository.findById(updatedDepartment.getHead().getId());
-            if (head.isEmpty()) {
-                throw new RuntimeException("Invalid Department Head ID!");
-            }
-            existingDepartment.setHead(head.get());
-        }
-
-        departmentRepository.save(existingDepartment);
-        return "Department updated successfully!";
+    public DepartmentDTO update(@PathVariable UUID id, @RequestBody DepartmentDTO dto) {
+        Location location = locationService.getById(dto.getLocationId());
+        Employee head = dto.getDepartmentHeadId() != null ? employeeService.getById(dto.getDepartmentHeadId()) : null;
+        Department department = DepartmentMapper.toEntity(dto, location, head);
+        department.setId(id);
+        return DepartmentMapper.toDTO(departmentService.save(department));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteDepartment(@PathVariable UUID id) {
-        if (!departmentRepository.existsById(id)) {
-            throw new RuntimeException("Department not found with ID: " + id);
-        }
-        departmentRepository.deleteById(id);
-        return "Department deleted successfully!";
+    public void delete(@PathVariable UUID id) {
+        departmentService.delete(id);
     }
 }
