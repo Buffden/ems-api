@@ -7,6 +7,108 @@
 - **Hibernate JPA**
 - **Maven**
 
+### 📊 Database Schema
+
+#### Core Entities
+
+1. **Employee**
+   - `id` (UUID, PK)
+   - `firstName` (String, required)
+   - `lastName` (String, required)
+   - `email` (String, required, unique)
+   - `phone` (String)
+   - `address` (String)
+   - `designation` (String, required)
+   - `salary` (Double, required)
+   - `joiningDate` (LocalDate, required)
+   - `location` (Location, required)
+   - `performanceRating` (Double)
+   - `manager` (Employee, self-reference)
+   - `department` (Department, required)
+   - `workLocation` (String, required)
+   - `experienceYears` (Integer)
+
+2. **Department**
+   - `id` (UUID, PK)
+   - `name` (String, required, unique)
+   - `description` (String)
+   - `location` (Location)
+   - `createdAt` (LocalDate, required)
+   - `budget` (Double)
+   - `budgetUtilization` (Double)
+   - `performanceMetric` (Double)
+   - `departmentHead` (Employee)
+   - `locationName` (String)
+   - `totalEmployees` (Integer)
+   - `employees` (List<Employee>)
+
+3. **Location**
+   - `id` (UUID, PK)
+   - `name` (String, required, unique)
+   - `address` (String)
+   - `city` (String, required)
+   - `state` (String, required)
+   - `country` (String, required, default: "USA")
+   - `postalCode` (String)
+
+4. **Project**
+   - `id` (UUID, PK)
+   - `name` (String, required, unique)
+   - `description` (String)
+   - `startDate` (LocalDate, required)
+   - `endDate` (LocalDate)
+   - `status` (String, required)
+   - `budget` (Double)
+   - `department` (Department, required)
+   - `projectManager` (Employee, required)
+
+5. **EmployeeProject** (Junction Table)
+   - `employee` (Employee, PK)
+   - `project` (Project, PK)
+   - `role` (String)
+   - `assignedDate` (LocalDate)
+
+6. **Task**
+   - `id` (UUID, PK)
+   - `name` (String, required)
+   - `description` (String)
+   - `status` (String, required)
+   - `priority` (String, required)
+   - `startDate` (LocalDate, required)
+   - `dueDate` (LocalDate)
+   - `completedDate` (LocalDate)
+   - `project` (Project, required)
+   - `assignedTo` (Employee)
+
+#### Entity Relationships
+
+```mermaid
+erDiagram
+    Employee ||--o{ Employee : "manages"
+    Employee ||--o{ Task : "assigned to"
+    Employee }o--|| Department : "belongs to"
+    Employee }o--|| Location : "works at"
+    Department ||--o{ Employee : "has"
+    Department ||--o{ Project : "owns"
+    Department }o--|| Location : "located at"
+    Department }o--|| Employee : "headed by"
+    Project ||--o{ Task : "contains"
+    Project }o--|| Department : "belongs to"
+    Project }o--|| Employee : "managed by"
+    Employee }o--o{ Project : "works on"
+    Location ||--o{ Department : "hosts"
+    Location ||--o{ Employee : "employs"
+```
+
+#### Key Features
+- UUID-based primary keys for all entities
+- Proper foreign key constraints and relationships
+- Denormalized fields for performance (e.g., `locationName` in Department)
+- Composite key for EmployeeProject junction table
+- Self-referential relationship for Employee management hierarchy
+- Optional fields marked appropriately
+- Required fields enforced at database level
+
 ---
 
 ### 📁 Project Setup
